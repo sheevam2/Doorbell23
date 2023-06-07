@@ -1,4 +1,2 @@
 # Test
-sugma 
-ligma 
-dickma
+
