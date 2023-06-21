@@ -9,7 +9,7 @@ capture.set(4, 480) #height
 
 while True:
     ret, image = capture.read()
-    image = cv2.flip(image, -1) #Vertical camera flip
+    image = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE) #Vertical camera flip
     gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) #grayscale
 
     faces_detected = face_cascade.detectMultiScale(gray_img, 1.2, 5, minSize = (20,20))

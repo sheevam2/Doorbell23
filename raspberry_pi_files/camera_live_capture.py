@@ -7,7 +7,9 @@ capture.set(4, 480) #height
 
 while(True):
     ret, frame = capture.read()
-    frame = cv2.flip(frame, -1) #Vertical camera flip
+    #frame = cv2.flip(frame, -1) #Vertical camera flip
+    #frame = cv2.flip(frame, 1) 
+    frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
     gray_vid = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) #grayscale
 
     cv2.imshow('frame', frame)
@@ -19,4 +21,3 @@ while(True):
 
 capture.release()
 cv2.destroyAllWindows()
-
