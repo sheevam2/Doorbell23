@@ -1,16 +1,34 @@
-
-from time import *
-from adafruit_servokit import ServoKit
+import asyncio
+import websockets
 import paho.mqtt.client as mqtt
 
-kit = ServoKit(channels=16)
-kit.servo[8].angle = 0
+async def connect_mqtt():
+    client = mqtt.Client()
+    client.on_connect = on_connect
+    client.on_message = on_message
 
-def on_connect(client, userdata, flags, rc):
-    print("Connected with result code " + str(rc))
+    websocket_uri = "ws://192.168.1.220:1884/mqtt"  # Replace with your WebSocket URI
+
+    # Connect to the MQTT broker over WebSocket
+    transport, protocol = await websockets.client.connect(websocket_uri)
+
+    # Set the transport to the MQTT client
+    client._transport = transport
+
+    # Start the MQTT client's event loop
+    client.loop_start()
+
+    # Wait for the connection to establish
+    while not client.is_connected():
+        await asyncio.sleep(0.1)
+
+    # Subscribe to the desired MQTT topic
     client.subscribe("test/servo")
 
-def on_message(client, userdata, msg):
+async def on_connect(client, userdata, flags, rc):
+    print("Connected to MQTT broker with result code " + str(rc))
+
+async def on_message(client, userdata, msg):
     print(msg.topic + " " + str(msg.payload))
     # Perform desired action based on the received message
     if msg.payload.decode() == 'This is lock':
@@ -22,14 +40,5 @@ def on_message(client, userdata, msg):
         # Your unlock action code goes here
         print("Unlock action triggered")
 
-client = mqtt.Client()
-
-client.on_connect = on_connect
-client.on_message = on_message
-
-client.connect("192.168.1.220", 1884, 60)
-
-client.loop_forever()
-
-
-
+# Run the connect_mqtt coroutine
+asyncio.run(connect_mqtt())
