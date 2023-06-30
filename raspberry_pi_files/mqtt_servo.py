@@ -1,7 +1,11 @@
-import asyncio
 import paho.mqtt.client as mqtt
+from time import *
+from adafruit_servokit import ServoKit
 
-async def connect_mqtt():
+kit = ServoKit(channels=16)
+kit.servo[8].angle = 0
+
+def connect_mqtt():
     client = mqtt.Client(transport="websockets")
     client.on_connect = on_connect
     client.on_message = on_message
@@ -17,23 +21,25 @@ async def connect_mqtt():
     client.connect(broker_address, broker_port, 60)
 
     # Start the MQTT client's network loop
-    client.loop_start()
+    client.loop_forever()
 
-async def on_connect(client, userdata, flags, rc):
+def on_connect(client, userdata, flags, rc):
     print("Connected to MQTT broker with result code " + str(rc))
     client.subscribe("test/servo")
 
-async def on_message(client, userdata, msg):
+def on_message(client, userdata, msg):
     print(msg.topic + " " + str(msg.payload))
     # Perform desired action based on the received message
     if msg.payload.decode() == 'This is lock':
         # Trigger the lock action on the Raspberry Pi
         # Your lock action code goes here
         print("Lock action triggered")
+        kit.servo[8].angle = 180
     elif msg.payload.decode() == 'This is unlock':
         # Trigger the unlock action on the Raspberry Pi
         # Your unlock action code goes here
         print("Unlock action triggered")
+        kit.servo[8].angle = 0
 
 # Run the connect_mqtt coroutine
-asyncio.run(connect_mqtt())
+connect_mqtt()
