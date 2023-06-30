@@ -1,32 +1,27 @@
 import asyncio
-import websockets
 import paho.mqtt.client as mqtt
 
 async def connect_mqtt():
-    client = mqtt.Client()
+    client = mqtt.Client(transport="websockets")
     client.on_connect = on_connect
     client.on_message = on_message
 
-    websocket_uri = "ws://192.168.1.220:1884/mqtt"  # Replace with your WebSocket URI
+    broker_address = "192.168.1.220"
+    broker_port = 1884
+
+    # Set the MQTT broker's WebSocket URI
+    websocket_uri = f"ws://{broker_address}:{broker_port}/mqtt"
 
     # Connect to the MQTT broker over WebSocket
-    transport, protocol = await websockets.client.connect(websocket_uri)
+    client.ws_set_options(path="/mqtt")  # Set the WebSocket path
+    client.connect(broker_address, broker_port, 60)
 
-    # Set the transport to the MQTT client
-    client._transport = transport
-
-    # Start the MQTT client's event loop
+    # Start the MQTT client's network loop
     client.loop_start()
-
-    # Wait for the connection to establish
-    while not client.is_connected():
-        await asyncio.sleep(0.1)
-
-    # Subscribe to the desired MQTT topic
-    client.subscribe("test/servo")
 
 async def on_connect(client, userdata, flags, rc):
     print("Connected to MQTT broker with result code " + str(rc))
+    client.subscribe("test/servo")
 
 async def on_message(client, userdata, msg):
     print(msg.topic + " " + str(msg.payload))
