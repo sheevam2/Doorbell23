@@ -8,26 +8,33 @@ capture.set(4, 480) #height
 
 face_cascade = cv2.CascadeClassifier("haarcascade_frontalface_default1.xml")
 
-id = input('Enter User ID: ')
 
 
 def changeDB(ID,Name,Photos):
-	conn=sqlite3.connect("FaceBase.db")
-	cmd="SELECT * FROM people"
-	cursor=conn.execute(cmd)
+    conn = sqlite3.connect("FaceBase.db")
+    cursor = conn.execute("SELECT * FROM people")
+	#cursor.execute(cmd)
         
-	isRecordExist=0
-	for row in cursor:
-		isRecordExist=1
+    isRecordExist=0
+    for row in cursor:
+        isRecordExist=1
 
-	if(isRecordExist==1):
-		cmd="UPDATE people SET Name= "+str(Name)+","+Photos+" WHERE PersonID = "+str(ID)
-	else:
-		cmd="INSERT INTO people(PersonID,Name,Photos) Values("+str(ID)+","+str(Name)+","+Photos+")"	 
-                
-	conn.execute(cmd)  
-	conn.commit()
-	conn.close()
+
+    try:
+        if(isRecordExist==1):
+            cmd="UPDATE people SET Name = ?,Photos = ? WHERE PersonID = ?"
+            conn.execute(cmd, (str(Name), Photos, ID))
+        else:
+            cmd="INSERT INTO people(PersonID, Name, Photos) VALUES(?, ?, ?)"	 
+            conn.execute(cmd, (ID, str(Name), Photos))
+
+        #conn.execute(cmd)  
+        conn.commit()
+        print("UPDATED SUCCESFULLY")
+    except:
+        print("ERROR")
+
+    conn.close()
         
 id=input('Enter user id : ')
 name=input('Enter your name : ')

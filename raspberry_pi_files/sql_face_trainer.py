@@ -16,7 +16,7 @@ def getImagesAndLabels():
     cmd="SELECT * FROM people"
     cursor=conn.execute(cmd)
 
-    cursor.execute("SELECT PersonID, Photos, FROM people")
+    cursor.execute("SELECT PersonID, Photos FROM people")
 
     rows = cursor.fetchall()
 
