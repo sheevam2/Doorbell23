@@ -12,16 +12,17 @@ face_cascade = cv2.CascadeClassifier("haarcascade_frontalface_default1.xml")
 
 def changeDB(ID,Name,Photos):
     conn = sqlite3.connect("FaceBase.db")
-    cursor = conn.execute("SELECT * FROM people")
+    cursor = conn.execute("SELECT * FROM people WHERE PersonID = ?", (ID,))
 	#cursor.execute(cmd)
         
-    isRecordExist=0
-    for row in cursor:
-        isRecordExist=1
+    isRecordExist = cursor.fetchone()
+    #isRecordExist=0
+    #for row in cursor:
+        #isRecordExist=1
 
 
     try:
-        if(isRecordExist==1):
+        if(isRecordExist is not None):
             cmd="UPDATE people SET Name = ?,Photos = ? WHERE PersonID = ?"
             conn.execute(cmd, (str(Name), Photos, ID))
         else:
