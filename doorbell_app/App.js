@@ -81,7 +81,7 @@ useEffect(() => {
     // You can process the message further and display it in your app's UI, if required.
   };
 
-  client.on('message', onMessageArrived)
+  client.on('messageReceived', onMessageArrived)
   
 /*const storage = {
   setItem: () => {},
