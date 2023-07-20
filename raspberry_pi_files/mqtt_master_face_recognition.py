@@ -49,9 +49,9 @@ def on_message(client, userdata, msg):
 
 
     elif msg.payload.decode() == 'This is Facial Recognition':
-        #client.publish("test/servo", "Facial Recognition Started")
+        client.publish("test/servo", "Facial Recognition Started")
         #message.destinationName = 'test/servo';  // Replace 'your/topic' with the desired topic
-        client.send("test/servo", "Facial Recognition Started")
+        #client.send("test/servo", "Facial Recognition Started")
 
         recognize_face = cv2.face.LBPHFaceRecognizer_create()
         recognize_face.read('trainer_sql/trainer_sql.yml')

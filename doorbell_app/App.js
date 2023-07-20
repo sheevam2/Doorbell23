@@ -60,7 +60,13 @@ useEffect(() => {
       console.log('Connected to MQTT broker');
       // Subscribe to the desired MQTT topic
       setConnected(true)
-      client.subscribe("test/servo");
+      client.subscribe('test/servo')
+      .then(() => {
+        console.log('Subscribed to the topic');
+      })
+      .catch((error) => {
+        console.log('Error subscribing to the topic:', error);
+      });
     })
     .catch((error) => {
       setConnected(false)
