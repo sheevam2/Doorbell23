@@ -49,6 +49,8 @@ def on_message(client, userdata, msg):
 
 
     elif msg.payload.decode() == 'This is Facial Recognition':
+        client.publish("test/servo", "Facial Recognition Started")
+
         recognize_face = cv2.face.LBPHFaceRecognizer_create()
         recognize_face.read('trainer_sql/trainer_sql.yml')
         cascade_filepath = "haarcascade_frontalface_default1.xml"
@@ -120,7 +122,7 @@ def on_message(client, userdata, msg):
    
     elif msg.payload.decode() == 'This is New Face':
         client.subscribe("test/servo")
-        
+
         capture = cv2.VideoCapture(0)
         capture.set(3, 640) #width
         capture.set(4, 480) #height
