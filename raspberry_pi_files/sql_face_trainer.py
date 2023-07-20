@@ -34,14 +34,14 @@ def getImagesAndLabels():
     for row in rows:
         photo_value = row[1]  # Assuming the column is the first (index 0)
         id_value = row[0]
-        print(id_value)
+        #print(id_value)
         photos_list = pickle.loads(photo_value)
         id_and_photos = []
         id_and_photos.append(photos_list)
         id_and_photos.append(id_value)
         all_photos.append(id_and_photos)
     #print(len(id_and_photos))
-    print(len(all_photos))
+    #print(len(all_photos))
     for photos in all_photos:
         for photo in photos[0]:
             #PIL_image = Image.open(photo).convert("L")
@@ -50,7 +50,7 @@ def getImagesAndLabels():
             faces_detected = face_cascade.detectMultiScale(numpy_image)
             for (x,y,w,h) in faces_detected:
                 face_samples.append(numpy_image[y:y+h,x:x+w])
-                print(photos[1])
+                #print(photos[1])
                 face_ids.append(photos[1])
 
     cursor.close()
@@ -59,11 +59,12 @@ def getImagesAndLabels():
     return face_samples, face_ids
 
 faces, ids = getImagesAndLabels()
-print(len(ids))
-for id in ids:
-    print(id)
-for face in faces:
-    print("YOO")
+
+#print(len(ids))
+#for id in ids:
+    #print(id)
+#for face in faces:
+    #print("YOO")
 recognize_face.train(faces, numpy.array(ids))
 
 recognize_face.write('trainer_sql/trainer_sql.yml')
