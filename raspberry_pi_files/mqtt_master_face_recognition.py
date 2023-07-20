@@ -119,6 +119,8 @@ def on_message(client, userdata, msg):
         cv2.destroyAllWindows()
    
     elif msg.payload.decode() == 'This is New Face':
+        client.subscribe("test/servo")
+        
         capture = cv2.VideoCapture(0)
         capture.set(3, 640) #width
         capture.set(4, 480) #height

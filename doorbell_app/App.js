@@ -174,11 +174,12 @@ const connect_button = () => {
 };
 
 client.on('message', (topic, message) => {
-  if (topic === 'test/servo') {
+ // if (topic === 'test/servo') {
     const msg = message.toString();
-  setMessages((prevMessages) => [ msg, ...prevMessages])
+    console.log(msg)
+    setMessages((prevMessages) => [ msg, ...prevMessages])
     // You can process the message further and display it in your app's UI, if required.
-  }
+  //}
 });
 
 
