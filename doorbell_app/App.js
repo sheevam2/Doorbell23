@@ -104,17 +104,19 @@ const [messages, setMessages] = useState([]);
 
   
 const lock_button = () => {
-  //const message = new Message('This is lock');  // Replace 'your message' with the desired message payload
-  //message.destinationName = 'test/servo';  // Replace 'your/topic' with the desired topic
-  //client.send(message);
+  //client.connect()
+  const message = new Message('This is lock');  // Replace 'your message' with the desired message payload
+  message.destinationName = 'test/servo';  // Replace 'your/topic' with the desired topic
+  client.send(message);
   const message1 = 'Lock Button Pressed!';
   setMessages((prevMessages) => [message1, ...prevMessages]);
 };
 
 const unlock_button = () => {
-  //const message = new Message('This is unlock');  // Replace 'your message' with the desired message payload
-  //message.destinationName = 'test/servo';  // Replace 'your/topic' with the desired topic
-  //client.send(message);
+  //client.connect()
+  const message = new Message('This is unlock');  // Replace 'your message' with the desired message payload
+  message.destinationName = 'test/servo';  // Replace 'your/topic' with the desired topic
+  client.send(message);
   const message1 = 'Unlock Button Pressed!';
   setMessages((prevMessages) => [ message1, ...prevMessages]);
 };
