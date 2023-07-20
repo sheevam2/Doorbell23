@@ -27,17 +27,6 @@ import { Client, Message } from 'react-native-paho-mqtt';
 //   console.log('Connected to MQTT broker');
 // });
 
-export default function App() {
-
-  // const brokerUrl = "192.168.1.220";
-  // const clientId = "2023";
-  // const client = Paho.Client(brokerUrl, Number(1883), "/", clientId);
-
-  //const client = new Client({ uri: 'ws://0.0.0.0:1883/ws', clientId: '2023'});
-  //const client = new Mqtt.Client('0.0.0.0:1883');
-
-const [connected, setConnected] = React.useState(false);
-  
 const storage = {
   setItem: () => {},
   getItem: () => {},
@@ -49,8 +38,22 @@ const client = new Client({
   clientId: 'hi3333',
   storage: storage,
 });
+ 
 
-React.useEffect(() => {
+export default function App() {
+
+  // const brokerUrl = "192.168.1.220";
+  // const clientId = "2023";
+  // const client = Paho.Client(brokerUrl, Number(1883), "/", clientId);
+
+  //const client = new Client({ uri: 'ws://0.0.0.0:1883/ws', clientId: '2023'});
+  //const client = new Mqtt.Client('0.0.0.0:1883');
+
+//const [connected, setConnected] = React.useState(false);
+
+const [connected, setConnected] = useState(false);
+
+useEffect(() => {
 
   client.connect()
     .then(() => {
@@ -63,8 +66,35 @@ React.useEffect(() => {
       setConnected(false)
       console.log('Connection failed:', error);
     });
+  }, []);
+  
+/*const storage = {
+  setItem: () => {},
+  getItem: () => {},
+  removeItem: () => {},
+};
+
+const client = new Client({
+  uri: 'ws://192.168.1.220:1884/mqtt',
+  clientId: 'hi3333',
+  storage: storage,
+});
+
+//React.useEffect(() => {
+
+  client.connect()
+    .then(() => {
+      console.log('Connected to MQTT broker');
+      // Subscribe to the desired MQTT topic
+      //setConnected(true)
+      client.subscribe('test/servo');
+    })
+    .catch((error) => {
+      //setConnected(false)
+      console.log('Connection failed:', error);
+    });
     
-}, []);
+//}, []); */
 
 const RectangularButton = ({ title, onPress }) => {
   return (
@@ -104,7 +134,6 @@ const [messages, setMessages] = useState([]);
 
   
 const lock_button = () => {
-  //client.connect()
   const message = new Message('This is lock');  // Replace 'your message' with the desired message payload
   message.destinationName = 'test/servo';  // Replace 'your/topic' with the desired topic
   client.send(message);
@@ -113,7 +142,6 @@ const lock_button = () => {
 };
 
 const unlock_button = () => {
-  //client.connect()
   const message = new Message('This is unlock');  // Replace 'your message' with the desired message payload
   message.destinationName = 'test/servo';  // Replace 'your/topic' with the desired topic
   client.send(message);
@@ -122,19 +150,36 @@ const unlock_button = () => {
 };
 
 const FR_button = () => {
+  const message = new Message('This is Facial Recognition');  // Replace 'your message' with the desired message payload
+  message.destinationName = 'test/servo';  // Replace 'your/topic' with the desired topic
+  client.send(message);
   const message1 = 'Facial Recognition Button Pressed!';
   setMessages((prevMessages) => [ message1, ...prevMessages]);
 };
 
 const newface_button = () => {
+  const message = new Message('This is New Face');  // Replace 'your message' with the desired message payload
+  message.destinationName = 'test/servo';  // Replace 'your/topic' with the desired topic
+  client.send(message);
   const message1 = 'New Face Button Pressed!';
   setMessages((prevMessages) => [ message1, ...prevMessages]);
 };
 
 const connect_button = () => {
+  const message = new Message('This is connected');  // Replace 'your message' with the desired message payload
+  message.destinationName = 'test/servo';  // Replace 'your/topic' with the desired topic
+  client.send(message);
   const message1 = 'Connect Button Pressed!';
   setMessages((prevMessages) => [ message1, ...prevMessages]);
 };
+
+client.on('message', (topic, message) => {
+  if (topic === 'test/servo') {
+    const msg = message.toString();
+  setMessages((prevMessages) => [ msg, ...prevMessages])
+    // You can process the message further and display it in your app's UI, if required.
+  }
+});
 
 
   return (
