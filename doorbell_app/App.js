@@ -33,11 +33,31 @@ const storage = {
   removeItem: () => {},
 };
 
+/*const storage2 = {
+  setItem: () => {},
+  getItem: () => {},
+  removeItem: () => {},
+};*/
+
 const client = new Client({
   uri: 'ws://192.168.1.220:1884/mqtt',
+  //uri: 'ws://192.168.1.251:1885/mqtt',
   clientId: 'hi3333',
   storage: storage,
+  /*messageArrived: (message) => {
+    console.log("HI")
+    console.log('Received Message:', message);
+    const payloadBytes = message.payloadBytes;
+    const payloadString = String.fromCharCode.apply(null, new Uint8Array(payloadBytes));
+    console.log(payloadString);
+  },*/
 });
+
+/*const client2 = new Client({
+  uri: 'ws://192.168.1.251:1885/mqtt', // Replace with the URI of your second broker
+  clientId: 'your_client_id',   // Choose a unique client ID for the second broker
+  storage: storage2,
+});*/
  
 
 export default function App() {
@@ -53,6 +73,14 @@ export default function App() {
 
 const [connected, setConnected] = useState(false);
 
+
+const [messages, setMessages] = useState([]);
+
+client.on('connected', () => {
+  console.log('PART 2');
+  //client.subscribe('test/servo');
+});
+
 useEffect(() => {
 
   client.connect()
@@ -67,6 +95,15 @@ useEffect(() => {
       .catch((error) => {
         console.log('Error subscribing to the topic:', error);
       });
+      client.subscribe("test/app")
+
+      client.on('messageReceived', (message) => {
+        const topic = message.destinationName; // Get the topic of the received message
+        if (topic === 'test/app') {
+          console.log('Message:', message.payloadString);
+        }
+      });
+
     })
     .catch((error) => {
       setConnected(false)
@@ -74,14 +111,39 @@ useEffect(() => {
     });
   }, []);
 
-  const onMessageArrived = (message) => {
-    msg = message.payloadString;
-    console.log(msg);
-    setMessages((prevMessages) => [msg, ...prevMessages]);
-    // You can process the message further and display it in your app's UI, if required.
-  };
+  /*client2.connect()
+    .then(() => {
+      console.log('Connected to MQTT broker COMPUTER');
+      // Subscribe to the desired MQTT topic
+      //setConnected(true)
+      client2.subscribe('test/servo')
+      .then(() => {
+        console.log('Subscribed to the topic COMPUTER');
+      })
+      .catch((error) => {
+        console.log('Error subscribing to the topic COMPUTER:', error);
+      });
+    })
+    .catch((error) => {
+      //setConnected(false)
+      console.log('Connection failed COMPUTER:', error);
+    }); */
 
-  client.on('messageReceived', onMessageArrived)
+  /*const onMessageArrived = (message) => {
+    //msg = message.payloadString;
+    //console.log(msg);
+    console.log("HI")
+    console.log('Received Message:', message);
+    const payloadBytes = message.payloadBytes;
+    const payloadString = String.fromCharCode.apply(null, new Uint8Array(payloadBytes));
+    console.log(payloadString);
+    //setMessages((prevMessages) => [msg, ...prevMessages]);
+    // You can process the message further and display it in your app's UI, if required.
+  };*/
+
+  //onMessageArrived("YOOO");
+
+  //client.onMessageArrived = onMessageArrived
   
 /*const storage = {
   setItem: () => {},
@@ -139,8 +201,6 @@ const LogScreen = ({ messages }) => {
   );
 };
 
-const [messages, setMessages] = useState([]);
-
 /*const handleButtonPress = () => {
   const message = 'Button pressed!';
   // Update the messages state with the new message
@@ -187,6 +247,8 @@ const connect_button = () => {
   const message1 = 'Connect Button Pressed!';
   setMessages((prevMessages) => [ message1, ...prevMessages]);
 };
+
+
 
 /*client.on('message', (topic, message) => {
  // if (topic === 'test/servo') {

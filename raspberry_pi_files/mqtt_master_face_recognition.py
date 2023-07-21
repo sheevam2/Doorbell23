@@ -32,7 +32,8 @@ def connect_mqtt():
 def on_connect(client, userdata, flags, rc):
     print("Connected to MQTT broker with result code " + str(rc))
     client.subscribe("test/servo")
-    client.publish("test/servo", "MQTT CONNECTION ESTABLISHED")
+    client.subscribe("test/app")
+    client.publish("test/app", "MQTT CONNECTION ESTABLISHED")
 
 def on_message(client, userdata, msg):
     print(msg.topic + " " + str(msg.payload))
@@ -50,7 +51,7 @@ def on_message(client, userdata, msg):
 
 
     elif msg.payload.decode() == 'This is Facial Recognition':
-        client.publish("test/servo", "Facial Recognition Started")
+        client.publish("test/app", "Facial Recognition Started")
         #message.destinationName = 'test/servo';  // Replace 'your/topic' with the desired topic
         #client.send("test/servo", "Facial Recognition Started")
 
@@ -124,7 +125,7 @@ def on_message(client, userdata, msg):
         cv2.destroyAllWindows()
    
     elif msg.payload.decode() == 'This is New Face':
-        client.subscribe("test/servo")
+        #client.subscribe("test/servo")
 
         capture = cv2.VideoCapture(0)
         capture.set(3, 640) #width
@@ -167,7 +168,7 @@ def on_message(client, userdata, msg):
         sampleNum=0 
 
         print("Please look at the camera. Capturing face samples...")
-        client.publish("test/servo","Please look at the camera. Capturing face samples...")
+        client.publish("test/app","Please look at the camera. Capturing face samples...")
         photos_list = []
 
 
@@ -196,7 +197,7 @@ def on_message(client, userdata, msg):
         changeDB(id,name,serialized_photos)
 
         print("Samples taken and exiting program")
-        client.publish("test/servo", "Samples taken and exiting program")
+        client.publish("test/app", "Samples taken and exiting program")
         capture.release()
         cv2.destroyAllWindows()
 
@@ -207,7 +208,7 @@ def on_message(client, userdata, msg):
         face_cascade = cv2.CascadeClassifier("haarcascade_frontalface_default1.xml")
 
         print("Face training in progress. This may take a few seconds...")
-        client.publish("test/servo","Face training in progress. This may take a few seconds...")
+        client.publish("test/app","Face training in progress. This may take a few seconds...")
 
         all_photos = []
 
@@ -271,7 +272,7 @@ def on_message(client, userdata, msg):
 
 
         print("\n [INFO] {0} Faces Trained. Program Exiting".format(len(numpy.unique(ids))))
-        client.publish("test/servo", "\n [INFO] {0} Faces Trained. Program Exiting".format(len(numpy.unique(ids))))
+        client.publish("test/app", "\n [INFO] {0} Faces Trained. Program Exiting".format(len(numpy.unique(ids))))
 
 
         
