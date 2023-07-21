@@ -273,7 +273,7 @@ def on_message(client, userdata, msg):
 
         print("Exiting Program")
         
-        client.loop_stop()
+        #client.loop_stop()
         cursor.close()
         conn.close()
 
