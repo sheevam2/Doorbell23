@@ -83,12 +83,12 @@ def sql_face_data_collection(client):
     changeDB(id,name,serialized_photos)
 
     print("Samples taken and exiting program")
-    client.loop_end()
+    client.loop_stop()
     client.publish("test/app", "Samples taken and exiting program")
     client.loop_start()
     capture.release()
     cv2.destroyAllWindows()
-    client.loop_end()
+    client.loop_stop()
 
 def sql_face_trainer(client):
 
@@ -161,7 +161,7 @@ def sql_face_trainer(client):
 
 
     print("\n [INFO] {0} Faces Trained. Program Exiting".format(len(numpy.unique(ids))))
-    client.loop_end()
+    client.loop_stop()
     client.publish("test/app", "\n [INFO] {0} Faces Trained. Program Exiting".format(len(numpy.unique(ids))))
 
 def connect_mqtt():
