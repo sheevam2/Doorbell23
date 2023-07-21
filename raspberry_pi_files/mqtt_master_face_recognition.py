@@ -7,6 +7,7 @@ import os
 import sqlite3
 import pickle
 import threading
+import concurrent.futures
 
 kit = ServoKit(channels=16)
 kit.servo[8].angle = 0
@@ -290,8 +291,10 @@ def on_message(client, userdata, msg):
     elif msg.payload.decode() == 'This is Facial Recognition':
         #sql_face_recognizer(client)
         client.publish("test/app", "Facial Recognition Started")
-        facial_recognition_thread = threading.Thread(target=sql_face_recognizer())
-        facial_recognition_thread.start()
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            executor.submit(sql_face_recognizer())
+        #facial_recognition_thread = threading.Thread(target=sql_face_recognizer())
+        #facial_recognition_thread.start()
    
     elif msg.payload.decode() == 'This is New Face':
         #client.subscribe("test/servo")
