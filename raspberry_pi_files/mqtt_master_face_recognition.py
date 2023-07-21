@@ -280,6 +280,7 @@ def on_message(client, userdata, msg):
         capture.release()
         cv2.destroyAllWindows()
         client.loop_stop()
+        client.loop_start()
    
     elif msg.payload.decode() == 'This is New Face':
         #client.subscribe("test/servo")
