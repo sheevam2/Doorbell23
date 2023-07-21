@@ -180,7 +180,7 @@ def connect_mqtt():
     client.connect(broker_address, broker_port, 60)
 
     # Start the MQTT client's network loop
-    client.loop_forever()
+    client.loop_start()
 
 def on_connect(client, userdata, flags, rc):
     print("Connected to MQTT broker with result code " + str(rc))
@@ -206,7 +206,7 @@ def on_message(client, userdata, msg):
     elif msg.payload.decode() == 'This is Facial Recognition':
         client.publish("test/app", "Facial Recognition Started")
 
-        client.loop_start()
+        #client.loop_start()
         #message.destinationName = 'test/servo';  // Replace 'your/topic' with the desired topic
         #client.send("test/servo", "Facial Recognition Started")
 
@@ -279,7 +279,7 @@ def on_message(client, userdata, msg):
 
         capture.release()
         cv2.destroyAllWindows()
-        client.loop_stop()
+        #client.loop_stop()
         #client.loop_start()
    
     elif msg.payload.decode() == 'This is New Face':
