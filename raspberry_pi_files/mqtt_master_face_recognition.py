@@ -6,6 +6,7 @@ import numpy
 import os
 import sqlite3
 import pickle
+import threading
 
 kit = ServoKit(channels=16)
 kit.servo[8].angle = 0
@@ -164,6 +165,85 @@ def sql_face_trainer(client):
     client.loop_stop()
     client.publish("test/app", "\n [INFO] {0} Faces Trained. Program Exiting".format(len(numpy.unique(ids))))
 
+def sql_face_recognizer(client):
+    client.publish("test/app", "Facial Recognition Started")
+
+    #client.loop_start()
+    #message.destinationName = 'test/servo';  // Replace 'your/topic' with the desired topic
+    #client.send("test/servo", "Facial Recognition Started")
+
+    recognize_face = cv2.face.LBPHFaceRecognizer_create()
+    recognize_face.read('trainer_sql/trainer_sql.yml')
+    cascade_filepath = "haarcascade_frontalface_default1.xml"
+
+    #kit = ServoKit(channels=16)
+    #kit.servo[8].angle = 0
+
+    face_cascade = cv2.CascadeClassifier(cascade_filepath)
+    font = cv2.FONT_HERSHEY_SIMPLEX
+
+    id = 0
+
+    #name_list = ['None', 'Raahul Rajah', 'Josh Mekala', 'Vineeth Chandrapoo']
+
+    capture = cv2.VideoCapture(0)
+    capture.set(3, 640) #width
+    capture.set(4, 480) #height
+
+    min_w = 0.1*capture.get(3)
+    min_h = 0.1*capture.get(4)
+
+    conn = sqlite3.connect("FaceBase.db")
+    cursor = conn.cursor()
+
+    def get_name_by_id(person_id):
+        cmd = "SELECT Name FROM people WHERE PersonID = ?"
+        cursor.execute(cmd, (person_id,))
+        row = cursor.fetchone()
+        if row is not None:
+            return row[0]
+        return "Unknown"
+
+    while (True):
+        ret, image = capture.read()
+        image = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE) #Vertical camera flip
+        gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) #grayscale
+        faces_detected = face_cascade.detectMultiScale(gray_img, 1.2, 5, minSize = (int(min_w),int(min_h)))
+
+        
+
+        for (x,y,w,h) in faces_detected:
+            cv2.rectangle(image,(x,y),(x+w, y+h),(0,255,0),2)
+            id, confidence_lvl = recognize_face.predict(gray_img[y:y+h,x:x+w])
+
+            if confidence_lvl < 70:
+                name_ = get_name_by_id(id)
+                confidence_lvl = " {0}%".format(round(100-confidence_lvl))
+                #kit.servo[8].angle = 180
+            else: 
+                name_ = "unknown"
+                confidence_lvl = " {0}%".format(round(100 - confidence_lvl))
+                #kit.servo[8].angle = 0
+
+            cv2.putText(image, str(name_), (x+5,y-5), font, 1, (255,255,255), 2)
+            cv2.putText(image, str(confidence_lvl), (x+5,y+h-5), font, 1, (255,255,255), 1)
+
+        cv2.imshow('camera', image)
+        a = cv2.waitKey(10) & 0xff
+        if a == 27: #Press escape to quit
+            break
+
+    print("Exiting Program")
+    
+    #client.loop_stop()
+    cursor.close()
+    conn.close()
+
+    capture.release()
+    cv2.destroyAllWindows()
+    #client.loop_stop()
+    #client.loop_start()
+
 def connect_mqtt():
     client = mqtt.Client(transport="websockets")
     client.on_connect = on_connect
@@ -209,83 +289,9 @@ def on_message(client, userdata, msg):
 
 
     elif msg.payload.decode() == 'This is Facial Recognition':
-        client.publish("test/app", "Facial Recognition Started")
-
-        #client.loop_start()
-        #message.destinationName = 'test/servo';  // Replace 'your/topic' with the desired topic
-        #client.send("test/servo", "Facial Recognition Started")
-
-        recognize_face = cv2.face.LBPHFaceRecognizer_create()
-        recognize_face.read('trainer_sql/trainer_sql.yml')
-        cascade_filepath = "haarcascade_frontalface_default1.xml"
-
-        #kit = ServoKit(channels=16)
-        #kit.servo[8].angle = 0
-
-        face_cascade = cv2.CascadeClassifier(cascade_filepath)
-        font = cv2.FONT_HERSHEY_SIMPLEX
-
-        id = 0
-
-        #name_list = ['None', 'Raahul Rajah', 'Josh Mekala', 'Vineeth Chandrapoo']
-
-        capture = cv2.VideoCapture(0)
-        capture.set(3, 640) #width
-        capture.set(4, 480) #height
-
-        min_w = 0.1*capture.get(3)
-        min_h = 0.1*capture.get(4)
-
-        conn = sqlite3.connect("FaceBase.db")
-        cursor = conn.cursor()
-
-        def get_name_by_id(person_id):
-            cmd = "SELECT Name FROM people WHERE PersonID = ?"
-            cursor.execute(cmd, (person_id,))
-            row = cursor.fetchone()
-            if row is not None:
-                return row[0]
-            return "Unknown"
-
-        while (True):
-            ret, image = capture.read()
-            image = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE) #Vertical camera flip
-            gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) #grayscale
-            faces_detected = face_cascade.detectMultiScale(gray_img, 1.2, 5, minSize = (int(min_w),int(min_h)))
-
-            
-
-            for (x,y,w,h) in faces_detected:
-                cv2.rectangle(image,(x,y),(x+w, y+h),(0,255,0),2)
-                id, confidence_lvl = recognize_face.predict(gray_img[y:y+h,x:x+w])
-
-                if confidence_lvl < 70:
-                    name_ = get_name_by_id(id)
-                    confidence_lvl = " {0}%".format(round(100-confidence_lvl))
-                    #kit.servo[8].angle = 180
-                else: 
-                    name_ = "unknown"
-                    confidence_lvl = " {0}%".format(round(100 - confidence_lvl))
-                    #kit.servo[8].angle = 0
-
-                cv2.putText(image, str(name_), (x+5,y-5), font, 1, (255,255,255), 2)
-                cv2.putText(image, str(confidence_lvl), (x+5,y+h-5), font, 1, (255,255,255), 1)
-
-            cv2.imshow('camera', image)
-            a = cv2.waitKey(10) & 0xff
-            if a == 27: #Press escape to quit
-                break
-
-        print("Exiting Program")
-        
-        #client.loop_stop()
-        cursor.close()
-        conn.close()
-
-        capture.release()
-        cv2.destroyAllWindows()
-        #client.loop_stop()
-        #client.loop_start()
+        #sql_face_recognizer(client)
+        facial_recognition_thread = threading.Thread(target=sql_face_recognizer(client))
+        facial_recognition_thread.start()
    
     elif msg.payload.decode() == 'This is New Face':
         #client.subscribe("test/servo")
