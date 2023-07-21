@@ -165,8 +165,7 @@ def sql_face_trainer(client):
     client.loop_stop()
     client.publish("test/app", "\n [INFO] {0} Faces Trained. Program Exiting".format(len(numpy.unique(ids))))
 
-def sql_face_recognizer(client):
-    client.publish("test/app", "Facial Recognition Started")
+def sql_face_recognizer():
 
     #client.loop_start()
     #message.destinationName = 'test/servo';  // Replace 'your/topic' with the desired topic
@@ -290,7 +289,8 @@ def on_message(client, userdata, msg):
 
     elif msg.payload.decode() == 'This is Facial Recognition':
         #sql_face_recognizer(client)
-        facial_recognition_thread = threading.Thread(target=sql_face_recognizer(client))
+        client.publish("test/app", "Facial Recognition Started")
+        facial_recognition_thread = threading.Thread(target=sql_face_recognizer())
         facial_recognition_thread.start()
    
     elif msg.payload.decode() == 'This is New Face':
