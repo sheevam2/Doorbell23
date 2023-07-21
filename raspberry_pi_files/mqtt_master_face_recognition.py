@@ -52,6 +52,8 @@ def on_message(client, userdata, msg):
 
     elif msg.payload.decode() == 'This is Facial Recognition':
         client.publish("test/app", "Facial Recognition Started")
+
+        time.sleep(2)
         #message.destinationName = 'test/servo';  // Replace 'your/topic' with the desired topic
         #client.send("test/servo", "Facial Recognition Started")
 
