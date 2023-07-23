@@ -242,7 +242,7 @@ def sql_face_recognizer(client):
 
     capture.release()
     cv2.destroyAllWindows()
-    client.loop_stop()
+    #client.loop_stop()
     connect_mqtt()
 
     #client.loop_start()
