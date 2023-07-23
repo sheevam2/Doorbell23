@@ -166,11 +166,12 @@ def sql_face_trainer(client):
     client.loop_stop()
     client.publish("test/app", "\n [INFO] {0} Faces Trained. Program Exiting".format(len(numpy.unique(ids))))
 
-def sql_face_recognizer():
+def sql_face_recognizer(client):
 
-    #client.loop_start()
     #message.destinationName = 'test/servo';  // Replace 'your/topic' with the desired topic
     #client.send("test/servo", "Facial Recognition Started")
+    client.publish("test/app", "Facial Recognition Started")
+    client.loop_start()
 
     recognize_face = cv2.face.LBPHFaceRecognizer_create()
     recognize_face.read('trainer_sql/trainer_sql.yml')
@@ -241,7 +242,7 @@ def sql_face_recognizer():
 
     capture.release()
     cv2.destroyAllWindows()
-    #client.loop_stop()
+    client.loop_stop()
     #client.loop_start()
 
 def connect_mqtt():
@@ -290,11 +291,11 @@ def on_message(client, userdata, msg):
 
     elif msg.payload.decode() == 'This is Facial Recognition':
         #sql_face_recognizer(client)
-        client.publish("test/app", "Facial Recognition Started")
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            executor.submit(sql_face_recognizer())
+        #client.publish("test/app", "Facial Recognition Started")
+        sql_face_recognizer(client)
         #facial_recognition_thread = threading.Thread(target=sql_face_recognizer())
         #facial_recognition_thread.start()
+        connect_mqtt()
    
     elif msg.payload.decode() == 'This is New Face':
         #client.subscribe("test/servo")
