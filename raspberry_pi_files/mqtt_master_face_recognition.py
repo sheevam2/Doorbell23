@@ -296,7 +296,7 @@ def on_message(client, userdata, msg):
         sql_face_recognizer(client)
         #facial_recognition_thread = threading.Thread(target=sql_face_recognizer())
         #facial_recognition_thread.start()
-        #connect_mqtt()
+        connect_mqtt()
    
     elif msg.payload.decode() == 'This is New Face':
         #client.subscribe("test/servo")
