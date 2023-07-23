@@ -13,6 +13,9 @@ kit = ServoKit(channels=16)
 kit.servo[8].angle = 0
 
 def sql_face_data_collection(client):
+    client.publish("test/app","Please look at the camera. Capturing face samples...")
+    client.loop_start()
+      
     capture = cv2.VideoCapture(0)
     capture.set(3, 640) #width
     capture.set(4, 480) #height
@@ -55,8 +58,8 @@ def sql_face_data_collection(client):
 
     print("Please look at the camera. Capturing face samples...")
     
-    client.publish("test/app","Please look at the camera. Capturing face samples...")
-    client.loop_start()
+    #client.publish("test/app","Please look at the camera. Capturing face samples...")
+    #client.loop_start()
     photos_list = []
 
 
@@ -85,12 +88,13 @@ def sql_face_data_collection(client):
     changeDB(id,name,serialized_photos)
 
     print("Samples taken and exiting program")
-    client.loop_stop()
+    #client.loop_stop()
     client.publish("test/app", "Samples taken and exiting program")
-    client.loop_start()
+    #client.loop_start()
     capture.release()
     cv2.destroyAllWindows()
-    client.loop_stop()
+    #client.loop_stop()
+    connect_mqtt()
 
 def sql_face_trainer(client):
 
@@ -163,8 +167,9 @@ def sql_face_trainer(client):
 
 
     print("\n [INFO] {0} Faces Trained. Program Exiting".format(len(numpy.unique(ids))))
-    client.loop_stop()
+    #client.loop_stop()
     client.publish("test/app", "\n [INFO] {0} Faces Trained. Program Exiting".format(len(numpy.unique(ids))))
+    connect_mqtt()
 
 def sql_face_recognizer(client):
 
