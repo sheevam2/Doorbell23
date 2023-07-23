@@ -261,12 +261,13 @@ def connect_mqtt():
     client.connect(broker_address, broker_port, 60)
 
     # Start the MQTT client's network loop
-    client.loop_start()
+    #client.loop_start()
+    client.loop_forever()
 
-def main():
+'''def main():
     connect_mqtt()
     while True:
-        sleep(1)
+        sleep(1)'''
 
 def on_connect(client, userdata, flags, rc):
     print("Connected to MQTT broker with result code " + str(rc))
@@ -306,5 +307,5 @@ def on_message(client, userdata, msg):
     elif msg.payload.decode() == "This is connected":
         print ("Connecting to MQTT")
 
-main()
+connect_mqtt()
 
