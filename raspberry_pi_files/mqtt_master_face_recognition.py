@@ -12,7 +12,9 @@ import json
 import base64
 
 kit = ServoKit(channels=16)
-kit.servo[8].angle = 0
+#kit.servo[8].angle = 0
+
+servo_turned = False
 
 username = "A"
 ID = "A"
@@ -175,7 +177,7 @@ def sql_face_trainer(client):
 
     faces, ids = getImagesAndLabels()
 
-    client.publish("test/app", 'TICKLE TICKLE LITTLE STAR')
+
 
     #print(len(ids))
     #for id in ids:
@@ -193,6 +195,10 @@ def sql_face_trainer(client):
     connect_mqtt(0)
 
 def sql_face_recognizer(client):
+
+    global servo_turned
+
+    current_angle = kit.servo[8].angle
 
     #message.destinationName = 'test/servo';  // Replace 'your/topic' with the desired topic
     #client.send("test/servo", "Facial Recognition Started")
@@ -262,6 +268,14 @@ def sql_face_recognizer(client):
                 name_ = get_name_by_id(id)
                 confidence_lvl = " {0}%".format(round(100-confidence_lvl))
                 #kit.servo[8].angle = 180
+
+                if not servo_turned:
+                    if (current_angle < 180):
+                        kit.servo[8].angle = 180
+                        servo_turned = True
+                    else:
+                        kit.servo[8].angle = 0
+                        servo_turned = True
             else: 
                 name_ = "unknown"
                 confidence_lvl = " {0}%".format(round(100 - confidence_lvl))
@@ -301,9 +315,13 @@ def sql_face_recognizer(client):
     #client.loop_start()
 
 def connect_mqtt(num):
+    global servo_turned
+    
     client = mqtt.Client(transport="websockets")
     client.on_connect = on_connect
     client.on_message = on_message
+
+    global servo_turned
 
     broker_address = "192.168.1.220"
     broker_port = 1884
@@ -320,6 +338,7 @@ def connect_mqtt(num):
     if (num == 1):
         sql_face_trainer(client)
     if (num == 2):
+        servo_turned = False
         sql_face_recognizer(client)
     if (num == 3):
         sql_face_data_collection(client)

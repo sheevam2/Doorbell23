@@ -316,7 +316,7 @@ const handleVideoFrame = (message) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>DOORBELL PROJECT </Text>
+      <Text style={styles.title}>BIOLock </Text>
       {connected ? (
         <Text style={styles.connectedText}>Status: Connected</Text>
       ) : (
@@ -358,6 +358,7 @@ const handleVideoFrame = (message) => {
 
       <Modal visible={isVideoModalVisible} animationType="slide">
         <View style={styles.videoModalContainer}>
+          <Text style={styles.modalTitle}>LIVESTREAM</Text>
           {/* Display the received video frame as an Image */}
           {videoFrame && <Image source={{ uri: `data:image/jpeg;base64,${videoFrame}` }} style={styles.videoFrame} />}
         </View>
