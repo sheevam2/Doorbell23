@@ -383,7 +383,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("test/popup")
     client.subscribe("test/video")
     client.subscribe("test/status")
-    client.publish("test/app", "MQTT CONNECTION ESTABLISHED")
+    # client.publish("test/app", "MQTT CONNECTION ESTABLISHED")
 
 def on_message(client, userdata, msg):
     global username, ID
