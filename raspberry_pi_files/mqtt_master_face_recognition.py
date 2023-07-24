@@ -89,19 +89,19 @@ def sql_face_data_collection(client):
 
     print("Samples taken and exiting program")
     #client.loop_stop()
-    client.publish("test/app", "Samples taken and exiting program")
-    client.loop_start()
+    #client.loop_start()
     capture.release()
     cv2.destroyAllWindows()
     #client.loop_stop()
-    sql_face_trainer(client)
-    connect_mqtt()
+    connect_mqtt(1)
+    #sql_face_trainer(client)
 
 def sql_face_trainer(client):
 
     recognize_face = cv2.face.LBPHFaceRecognizer_create()
     face_cascade = cv2.CascadeClassifier("haarcascade_frontalface_default1.xml")
 
+    client.publish("test/app", "Samples taken and exiting program")
     print("Face training in progress. This may take a few seconds...")
     client.publish("test/app","Face training in progress. This may take a few seconds...")
     client.loop_start()
@@ -170,7 +170,7 @@ def sql_face_trainer(client):
     print("\n [INFO] {0} Faces Trained. Program Exiting".format(len(numpy.unique(ids))))
     #client.loop_stop()
     client.publish("test/app", "\n [INFO] {0} Faces Trained. Program Exiting".format(len(numpy.unique(ids))))
-    connect_mqtt()
+    connect_mqtt(0)
 
 def sql_face_recognizer(client):
 
@@ -249,11 +249,11 @@ def sql_face_recognizer(client):
     capture.release()
     cv2.destroyAllWindows()
     #client.loop_stop()
-    connect_mqtt()
+    connect_mqtt(0)
 
     #client.loop_start()
 
-def connect_mqtt():
+def connect_mqtt(num):
     client = mqtt.Client(transport="websockets")
     client.on_connect = on_connect
     client.on_message = on_message
@@ -271,6 +271,9 @@ def connect_mqtt():
     # Start the MQTT client's network loop
     #client.loop_start()
     client.loop_forever()
+
+    if (num == 1):
+        sql_face_trainer(client)
 
 '''def main():
     connect_mqtt()
@@ -315,5 +318,5 @@ def on_message(client, userdata, msg):
     elif msg.payload.decode() == "This is connected":
         print ("Connecting to MQTT")
 
-connect_mqtt()
+connect_mqtt(0)
 
