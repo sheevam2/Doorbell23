@@ -16,6 +16,9 @@ kit.servo[8].angle = 0
 username = ""
 ID = ""
 
+def define_credentials(client):
+    client.publish("test/app", "Please Enter User Information")
+
 def sql_face_data_collection(client):
     #client.loop_start()
       
@@ -54,7 +57,7 @@ def sql_face_data_collection(client):
 
         conn.close()
 
-    client.publish("test/app", "Please Enter User Information")
+    #if (info_received == true)
             
     id=ID
     name=username
@@ -288,7 +291,9 @@ def connect_mqtt(num):
         sql_face_recognizer(client)
     if (num == 3):
         sql_face_data_collection(client)
-
+    if (num == 4):
+        define_credentials(client)
+        
     client.loop_forever()
 
 '''def main():
@@ -342,12 +347,13 @@ def on_message(client, userdata, msg):
     elif msg.payload.decode() == 'This is New Face':
         #client.subscribe("test/servo")
 
-        connect_mqtt(3)
+        connect_mqtt(4)
 
     elif msg.payload.decode() == "This is connected":
         print ("Connecting to MQTT")
-    elif msg.payload.decode() == "Info Submitted":
+    elif msg.payload.decode() == "Start Data Collection":
         print("Info Submitted")
+        connect_mqtt(3)
 
 
 connect_mqtt(0)

@@ -266,7 +266,11 @@ const handleSubmit = () => {
   message.destinationName = 'test/popup'; // Replace 'test/app' with the desired topic to receive the username and ID on Raspberry Pi
   client.send(message);
 
-  toggleModal()
+  const message2 = new Message("Start Data Collection");
+  message2._destinationName = 'test/servo';
+  client.send(message2)
+
+  toggleModal();
   setUsername('');
   setInputNumber('');
 
@@ -275,13 +279,13 @@ const handleSubmit = () => {
   setMessages((prevMessages) => [confirmationMessage, ...prevMessages]);
 };
 
-const handleNumberSubmit = () => {
+/*const handleNumberSubmit = () => {
   // Process the inputNumber (e.g., send it via MQTT)
   console.log('Submitted number:', inputNumber);
 
   // Close the modal after submission
   toggleModal();
-};
+};*/
 
 /*client.on('message', (topic, message) => {
  // if (topic === 'test/servo') {
