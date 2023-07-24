@@ -349,6 +349,7 @@ def connect_mqtt(num):
 
     angle = kit.servo[8].angle
     #print("HI")
+    print(angle)
     if angle == 0:
         client.publish("test/status", "Unlocked")
         print("Unlocked")
