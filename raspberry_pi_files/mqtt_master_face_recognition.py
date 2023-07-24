@@ -13,8 +13,6 @@ import json
 kit = ServoKit(channels=16)
 kit.servo[8].angle = 0
 
-username = None
-ID = None
 
 def define_credentials(client):
     client.publish("test/app", "Please Enter User Information")
@@ -269,6 +267,8 @@ def sql_face_recognizer(client):
     #client.loop_start()
 
 def connect_mqtt(num):
+    global username, ID
+
     client = mqtt.Client(transport="websockets")
     client.on_connect = on_connect
     client.on_message = on_message
