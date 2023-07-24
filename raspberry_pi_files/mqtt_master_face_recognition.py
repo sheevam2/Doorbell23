@@ -188,7 +188,7 @@ def sql_face_trainer(client):
 
     print("\n [INFO] {0} Faces Trained. Program Exiting".format(len(numpy.unique(ids))))
     #client.loop_stop()
-    client.publish("test/app", "\n [INFO] {0} Faces Trained. Program Exiting".format(len(numpy.unique(ids))))
+    client.publish("test/app", "[INFO] {0} Faces Trained. Program Exiting".format(len(numpy.unique(ids))))
     connect_mqtt(0)
 
 def sql_face_recognizer(client):
@@ -229,8 +229,11 @@ def sql_face_recognizer(client):
         if row is not None:
             return row[0]
         return "Unknown"
-
-    while (True):
+    
+    start_time = time.time()
+    elapsed_time = 0
+    timeout = 15
+    while (elapsed_time < timeout):
         ret, image = capture.read()
         image = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE) #Vertical camera flip
         gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) #grayscale
@@ -258,6 +261,8 @@ def sql_face_recognizer(client):
         a = cv2.waitKey(10) & 0xff
         if a == 27: #Press escape to quit
             break
+        
+        elapsed_time = time.time() - start_time
 
     print("Exiting Program")
     
@@ -357,6 +362,7 @@ def on_message(client, userdata, msg):
 
     elif msg.payload.decode() == "This is connected":
         print ("Connecting to MQTT")
+        connect_mqtt(0)
     elif msg.payload.decode() == "Start Data Collection":
         print("Info Submitted")
         connect_mqtt(3)
