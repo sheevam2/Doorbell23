@@ -270,10 +270,10 @@ def connect_mqtt(num):
 
     # Start the MQTT client's network loop
     #client.loop_start()
-    client.loop_forever()
-
     if (num == 1):
         sql_face_trainer(client)
+        
+    client.loop_forever()
 
 '''def main():
     connect_mqtt()
