@@ -14,7 +14,7 @@ kit.servo[8].angle = 0
 
 def sql_face_data_collection(client):
     client.publish("test/app","Please look at the camera. Capturing face samples...")
-    client.loop_start()
+    #client.loop_start()
       
     capture = cv2.VideoCapture(0)
     capture.set(3, 640) #width
@@ -104,7 +104,7 @@ def sql_face_trainer(client):
     client.publish("test/app", "Samples taken and exiting program")
     print("Face training in progress. This may take a few seconds...")
     client.publish("test/app","Face training in progress. This may take a few seconds...")
-    client.loop_start()
+    #client.loop_start()
     client.publish("test/app", "TESTTT")
     
     all_photos = []
@@ -273,10 +273,12 @@ def connect_mqtt(num):
 
     # Start the MQTT client's network loop
     #client.loop_start()
-    if (num == 2):
-        sql_face_recognizer(client)
     if (num == 1):
         sql_face_trainer(client)
+    if (num == 2):
+        sql_face_recognizer(client)
+    if (num == 3):
+        sql_face_data_collection(client)
 
     client.loop_forever()
 
@@ -318,8 +320,7 @@ def on_message(client, userdata, msg):
     elif msg.payload.decode() == 'This is New Face':
         #client.subscribe("test/servo")
 
-        sql_face_data_collection(client)
-        sql_face_trainer(client)
+        connect_mqtt(3)
 
     elif msg.payload.decode() == "This is connected":
         print ("Connecting to MQTT")
