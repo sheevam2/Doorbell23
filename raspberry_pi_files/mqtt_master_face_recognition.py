@@ -314,16 +314,16 @@ def sql_face_recognizer(client):
 
     #client.loop_start()
 
-def check_and_publish_lock_status(client):
+'''def check_and_publish_lock_status(client):
     angle = kit.servo[0].angle
+    print("HI")
     if angle == 0:
         client.publish("test/status", "Unlocked")
         print("Unlocked")
     elif angle == 180:
         client.publish("test/status", "Locked")
-        print("Locked")
+        print("Locked")'''
 
-    connect_mqtt(0)
 
 def connect_mqtt(num):
     global servo_turned
@@ -347,6 +347,15 @@ def connect_mqtt(num):
     # Start the MQTT client's network loop
     #client.loop_start()
 
+    angle = kit.servo[0].angle
+    #print("HI")
+    if angle == 0:
+        client.publish("test/status", "Unlocked")
+        #print("Unlocked")
+    elif angle == 180:
+        client.publish("test/status", "Locked")
+        #print("Locked")
+
     if (num == 1):
         sql_face_trainer(client)
     if (num == 2):
@@ -357,7 +366,7 @@ def connect_mqtt(num):
     if (num == 4):
         define_credentials(client)
 
-    check_and_publish_lock_status(client)
+    #check_and_publish_lock_status(client)
         
     client.loop_forever()
 
@@ -397,13 +406,13 @@ def on_message(client, userdata, msg):
         # Your lock action code goes here
         print("Lock action triggered")
         kit.servo[8].angle = 180
-        #connect_mqtt(0)
+        connect_mqtt(0)
     elif msg.payload.decode() == 'This is unlock':
         # Trigger the unlock action on the Raspberry Pi
         # Your unlock action code goes here
         print("Unlock action triggered")
         kit.servo[8].angle = 0
-        #connect_mqtt(0)
+        connect_mqtt(0)
 
     elif msg.payload.decode() == 'This is Facial Recognition':
         #sql_face_recognizer(client)
