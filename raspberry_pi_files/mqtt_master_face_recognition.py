@@ -157,7 +157,7 @@ def sql_face_trainer(client):
 
     faces, ids = getImagesAndLabels()
 
-    client.publish('HIIIIIIII')
+    client.publish("test/app", 'HIIIIIIII')
 
     #print(len(ids))
     #for id in ids:
