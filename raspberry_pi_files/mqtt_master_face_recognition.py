@@ -239,15 +239,15 @@ def sql_face_recognizer(client):
         ret, image = capture.read()
         image = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE) #Vertical camera flip
 
-        # Convert the frame to base64 encoding to publish as a string payload
-        _, buffer = cv2.imencode('.jpg', image)
+    # Convert the frame to base64 encoding to publish as a string payload
+        '''_, buffer = cv2.imencode('.jpg', image)
         frame_base64 = base64.b64encode(buffer)
 
         # Publish the fsrame as an MQTT message
         client.publish("test/video", payload=frame_base64, qos=0)
 
         # You can add a small delay to control the frame rate (optional)
-        sleep(0.1)
+        sleep(0.1) '''
 
         gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) #grayscale
         faces_detected = face_cascade.detectMultiScale(gray_img, 1.2, 5, minSize = (int(min_w),int(min_h)))
@@ -269,6 +269,15 @@ def sql_face_recognizer(client):
 
             cv2.putText(image, str(name_), (x+5,y-5), font, 1, (255,255,255), 2)
             cv2.putText(image, str(confidence_lvl), (x+5,y+h-5), font, 1, (255,255,255), 1)
+
+        _, buffer = cv2.imencode('.jpg', image)
+        frame_base64 = base64.b64encode(buffer)
+
+        # Publish the fsrame as an MQTT message
+        client.publish("test/video", payload=frame_base64, qos=0)
+
+        # You can add a small delay to control the frame rate (optional)
+        sleep(0.1)
 
         cv2.imshow('camera', image)
         a = cv2.waitKey(10) & 0xff
