@@ -90,10 +90,11 @@ def sql_face_data_collection(client):
     print("Samples taken and exiting program")
     #client.loop_stop()
     client.publish("test/app", "Samples taken and exiting program")
-    #client.loop_start()
+    client.loop_start()
     capture.release()
     cv2.destroyAllWindows()
     #client.loop_stop()
+    sql_face_trainer(client)
     connect_mqtt()
 
 def sql_face_trainer(client):
