@@ -314,6 +314,15 @@ def sql_face_recognizer(client):
 
     #client.loop_start()
 
+def check_and_publish_lock_status(client):
+    angle = kit.servo[0].angle
+    if angle == 0:
+        client.publish("test/status", "Unlocked")
+        #print("Unlocked")
+    elif angle == 180:
+        client.publish("test/status", "Locked")
+        #print("Locked")
+
 def connect_mqtt(num):
     global servo_turned
     
@@ -335,6 +344,7 @@ def connect_mqtt(num):
 
     # Start the MQTT client's network loop
     #client.loop_start()
+
     if (num == 1):
         sql_face_trainer(client)
     if (num == 2):
@@ -344,6 +354,8 @@ def connect_mqtt(num):
         sql_face_data_collection(client)
     if (num == 4):
         define_credentials(client)
+
+    check_and_publish_lock_status(client)
         
     client.loop_forever()
 
@@ -358,6 +370,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("test/app")
     client.subscribe("test/popup")
     client.subscribe("test/video")
+    client.subscribe("test/status")
     client.publish("test/app", "MQTT CONNECTION ESTABLISHED")
 
 def on_message(client, userdata, msg):

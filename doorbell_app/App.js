@@ -80,6 +80,8 @@ const [messages, setMessages] = useState([]);
 const [videoFrame, setVideoFrame] = useState(null);
 const [isVideoModalVisible, setVideoModalVisible] = useState(false);
 
+const [lockStatus, setLockStatus] = useState('Unknown');
+
 
 
 client.on('connected', () => {
@@ -104,12 +106,18 @@ useEffect(() => {
       client.subscribe("test/app")
       client.subscribe("test/popup")
       client.subscribe("test/video")
+      client.subscribe("test/status")
 
       client.on('messageReceived', (message) => {
         const topic = message.destinationName; // Get the topic of the received message
         if (topic === "test/video") {
           handleVideoFrame(message)
         }
+        
+        if (topic === "test/status") {
+          setLockStatus(message.payloadString)
+        }
+
         if (topic === 'test/app') {
           console.log('Message:', message.payloadString);
           setMessages((prevMessages) => [message.payloadString, ...prevMessages]);
@@ -322,6 +330,9 @@ const handleVideoFrame = (message) => {
       ) : (
         <Text style={styles.disconnectedText}>Status: Disconnected</Text>
       )}
+        
+      <Text style={styles.lockStatusText}>Lock Status: {lockStatus}</Text>
+
       <View style = {styles.container2}>
       <RectangularButton2 title = 'Lock' onPress={lock_button}/>
       <RectangularButton2 title = 'Unlock' onPress={unlock_button}/>
@@ -504,5 +515,13 @@ const styles = StyleSheet.create({
     width: 320,
     height: 240,
   }, 
+  lockStatusText: {
+    fontSize: 18,
+    color: 'blue',
+    position: 'absolute',
+    top: 160,
+    marginTop: 10,
+    fontWeight: 'bold',
+  },
   
 });
