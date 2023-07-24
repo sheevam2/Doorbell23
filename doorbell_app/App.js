@@ -104,6 +104,7 @@ useEffect(() => {
         const topic = message.destinationName; // Get the topic of the received message
         if (topic === 'test/app') {
           console.log('Message:', message.payloadString);
+          setMessages((prevMessages) => [message.payloadString, ...prevMessages]);
           if (message.payloadString == "Please Enter User Information") {
             toggleModal()
           }
