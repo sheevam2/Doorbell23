@@ -350,10 +350,10 @@ def connect_mqtt(num):
     angle = kit.servo[8].angle
     #print("HI")
     print(angle)
-    if angle == 0:
+    if angle < 180:
         client.publish("test/status", "Unlocked")
         print("Unlocked")
-    elif angle == 180:
+    elif angle >= 180:
         client.publish("test/status", "Locked")
         print("Locked")
 
