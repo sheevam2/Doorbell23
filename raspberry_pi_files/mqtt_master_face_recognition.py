@@ -59,6 +59,9 @@ def sql_face_data_collection(client):
     id=ID
     name=username
 
+    print(ID)
+    print(username)
+
     sampleNum=0 
 
     print("Please look at the camera. Capturing face samples...")
