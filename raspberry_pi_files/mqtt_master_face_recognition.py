@@ -13,8 +13,8 @@ import json
 kit = ServoKit(channels=16)
 kit.servo[8].angle = 0
 
-username = ""
-ID = ""
+# username = ""
+#ID = ""
 
 def define_credentials(client):
     client.publish("test/app", "Please Enter User Information")
