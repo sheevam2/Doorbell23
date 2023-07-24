@@ -180,7 +180,7 @@ def sql_face_recognizer(client):
     #message.destinationName = 'test/servo';  // Replace 'your/topic' with the desired topic
     #client.send("test/servo", "Facial Recognition Started")
     client.publish("test/app", "Facial Recognition Started")
-    client.loop_start()
+    #client.loop_start()
 
     recognize_face = cv2.face.LBPHFaceRecognizer_create()
     recognize_face.read('trainer_sql/trainer_sql.yml')
@@ -273,6 +273,8 @@ def connect_mqtt(num):
 
     # Start the MQTT client's network loop
     #client.loop_start()
+    if (num == 2):
+        sql_face_recognizer(client)
     if (num == 1):
         sql_face_trainer(client)
 
@@ -307,7 +309,8 @@ def on_message(client, userdata, msg):
     elif msg.payload.decode() == 'This is Facial Recognition':
         #sql_face_recognizer(client)
         #client.publish("test/app", "Facial Recognition Started")
-        sql_face_recognizer(client)
+        #sql_face_recognizer(client)
+        connect_mqtt(2)
         #facial_recognition_thread = threading.Thread(target=sql_face_recognizer())
         #facial_recognition_thread.start()
         #connect_mqtt()
