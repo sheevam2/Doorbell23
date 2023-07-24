@@ -8,9 +8,13 @@ import sqlite3
 import pickle
 import threading
 import concurrent.futures
+import json
 
 kit = ServoKit(channels=16)
 kit.servo[8].angle = 0
+
+username = ""
+ID = ""
 
 def sql_face_data_collection(client):
     client.publish("test/app","Please look at the camera. Capturing face samples...")
@@ -50,9 +54,11 @@ def sql_face_data_collection(client):
             print("ERROR")
 
         conn.close()
+
+    client.publish("test/app", "Please Enter User Information")
             
-    id=input('Enter user id : ')
-    name=input('Enter your name : ')
+    id=ID
+    name=username
 
     sampleNum=0 
 
@@ -158,7 +164,7 @@ def sql_face_trainer(client):
 
     faces, ids = getImagesAndLabels()
 
-    client.publish("test/app", 'HIIIIIIII')
+    client.publish("test/app", 'TICKLE TICKLE LITTLE STAR')
 
     #print(len(ids))
     #for id in ids:
@@ -291,11 +297,24 @@ def on_connect(client, userdata, flags, rc):
     print("Connected to MQTT broker with result code " + str(rc))
     client.subscribe("test/servo")
     client.subscribe("test/app")
+    client.subscribe("test/popup")
     client.publish("test/app", "MQTT CONNECTION ESTABLISHED")
 
 def on_message(client, userdata, msg):
     print(msg.topic + " " + str(msg.payload))
     # Perform desired action based on the received message
+    topic = msg.topic
+    if (topic == "test/popup"):
+        payload = msg.payload.decode("utf-8")
+        try:
+            data = json.loads(payload)
+            username = data.get("username")
+            ID = data.get("inputNumber")
+            print("Received username:", username)
+            print("Received ID:", ID)
+            # Perform any actions with the received data here
+        except json.JSONDecodeError:
+            print("Error decoding JSON data")
     if msg.payload.decode() == 'This is lock':
         # Trigger the lock action on the Raspberry Pi
         # Your lock action code goes here
@@ -324,6 +343,9 @@ def on_message(client, userdata, msg):
 
     elif msg.payload.decode() == "This is connected":
         print ("Connecting to MQTT")
+    elif msg.payload.decode() == "Info Submitted":
+        print("Info Submitted")
+
 
 connect_mqtt(0)
 

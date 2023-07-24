@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Button, TouchableOpacity, ScrollView} from 'react-native';
+import { StyleSheet, Text, View, Button, TouchableOpacity, ScrollView, Modal, TextInput} from 'react-native';
 import React, { useState, useEffect, useRef } from 'react'; // Import useState and useEffect from 'react'
 //import { MqttClient, MqttConnectionState } from 'sp-react-native-mqtt';
 //import Mqtt from 'react_native_mqtt';
@@ -72,9 +72,11 @@ export default function App() {
 //const [connected, setConnected] = React.useState(false);
 
 const [connected, setConnected] = useState(false);
-
-
+const [username, setUsername] = useState('');
+const [inputNumber, setInputNumber] = useState('');
+const [isModalVisible, setModalVisible] = useState(false);
 const [messages, setMessages] = useState([]);
+
 
 client.on('connected', () => {
   console.log('PART 2');
@@ -96,11 +98,15 @@ useEffect(() => {
         console.log('Error subscribing to the topic:', error);
       });
       client.subscribe("test/app")
+      client.subscribe("test/popup")
 
       client.on('messageReceived', (message) => {
         const topic = message.destinationName; // Get the topic of the received message
         if (topic === 'test/app') {
           console.log('Message:', message.payloadString);
+          if (message.payloadString == "Please Enter User Information") {
+            toggleModal()
+          }
         }
       });
 
@@ -248,7 +254,34 @@ const connect_button = () => {
   setMessages((prevMessages) => [ message1, ...prevMessages]);
 };
 
+const toggleModal = () => {
+  setModalVisible(!isModalVisible);
+};
 
+const handleSubmit = () => {
+  // Validate the input fields if needed
+  // Send the username and ID to the Raspberry Pi using MQTT
+  const payload = JSON.stringify({ username, inputNumber });
+  const message = new Message(payload);
+  message.destinationName = 'test/popup'; // Replace 'test/app' with the desired topic to receive the username and ID on Raspberry Pi
+  client.send(message);
+
+  toggleModal()
+  setUsername('');
+  setInputNumber('');
+
+  // Optional: Update your messages state with a confirmation message
+  const confirmationMessage = `Username: ${username}, ID: ${inputNumber} submitted`;
+  setMessages((prevMessages) => [confirmationMessage, ...prevMessages]);
+};
+
+const handleNumberSubmit = () => {
+  // Process the inputNumber (e.g., send it via MQTT)
+  console.log('Submitted number:', inputNumber);
+
+  // Close the modal after submission
+  toggleModal();
+};
 
 /*client.on('message', (topic, message) => {
  // if (topic === 'test/servo') {
@@ -277,6 +310,32 @@ const connect_button = () => {
       <RectangularButton title = "Add New Face" onPress={newface_button}/>
       <RectangularButton title = 'Connect' onPress={connect_button}/>
       <LogScreen messages={messages} />
+
+
+      <Modal visible={isModalVisible} animationType="slide">
+        <View style={styles.modalContainer}>
+          <Text style={styles.modalTitle}>Enter Info</Text>
+          
+          <TextInput
+            style={styles.input}
+            placeholder="Enter username"
+            onChangeText={(text) => setUsername(text)}
+            value={username}
+          />
+         
+          <TextInput
+            style={styles.input}
+            placeholder="Enter a number"
+            onChangeText={(text) => setInputNumber(text)}
+            value={inputNumber}
+            keyboardType="numeric"
+          />
+         
+          <RectangularButton title="Submit" onPress={handleSubmit} />
+        </View>
+      </Modal>
+
+
       </View>
       <StatusBar style="auto" />
     </View>
@@ -385,6 +444,27 @@ const styles = StyleSheet.create({
     color: '#333',
     fontSize: 16,
     marginBottom: 5,
+  },
+
+  modalContainer: {
+    flex: 1,
+    backgroundColor: '#131414',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#2b87ed',
+    marginBottom: 20,
+  },
+  input: {
+    backgroundColor: '#f0f0f0',
+    width: 300,
+    height: 40,
+    paddingHorizontal: 10,
+    marginBottom: 20,
+    borderRadius: 8,
   },
   
   
