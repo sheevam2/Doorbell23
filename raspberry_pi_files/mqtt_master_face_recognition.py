@@ -105,7 +105,8 @@ def sql_face_trainer(client):
     print("Face training in progress. This may take a few seconds...")
     client.publish("test/app","Face training in progress. This may take a few seconds...")
     client.loop_start()
-
+    client.publish("test/app", "TESTTT")
+    
     all_photos = []
 
     def getImagesAndLabels(): 
