@@ -116,6 +116,7 @@ useEffect(() => {
         
         if (topic === "test/status") {
           setLockStatus(message.payloadString)
+          console.log('Message:', message.payloadString)
         }
 
         if (topic === 'test/app') {
@@ -517,7 +518,7 @@ const styles = StyleSheet.create({
   }, 
   lockStatusText: {
     fontSize: 18,
-    color: 'blue',
+    color: '#007AFF',
     position: 'absolute',
     top: 160,
     marginTop: 10,

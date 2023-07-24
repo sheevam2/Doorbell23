@@ -318,10 +318,10 @@ def check_and_publish_lock_status(client):
     angle = kit.servo[0].angle
     if angle == 0:
         client.publish("test/status", "Unlocked")
-        #print("Unlocked")
+        print("Unlocked")
     elif angle == 180:
         client.publish("test/status", "Locked")
-        #print("Locked")
+        print("Locked")
 
 def connect_mqtt(num):
     global servo_turned
