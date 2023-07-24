@@ -17,7 +17,6 @@ username = ""
 ID = ""
 
 def sql_face_data_collection(client):
-    client.publish("test/app","Please look at the camera. Capturing face samples...")
     #client.loop_start()
       
     capture = cv2.VideoCapture(0)
@@ -63,6 +62,7 @@ def sql_face_data_collection(client):
     sampleNum=0 
 
     print("Please look at the camera. Capturing face samples...")
+    client.publish("test/app","Please look at the camera. Capturing face samples...")
     
     #client.publish("test/app","Please look at the camera. Capturing face samples...")
     #client.loop_start()
