@@ -157,6 +157,8 @@ def sql_face_trainer(client):
 
     faces, ids = getImagesAndLabels()
 
+    client.publish('HIIIIIIII')
+
     #print(len(ids))
     #for id in ids:
         #print(id)
@@ -272,7 +274,7 @@ def connect_mqtt(num):
     #client.loop_start()
     if (num == 1):
         sql_face_trainer(client)
-        
+
     client.loop_forever()
 
 '''def main():
