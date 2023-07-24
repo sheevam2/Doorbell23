@@ -17,6 +17,8 @@ username = "A"
 ID = "A"
 
 def define_credentials(client):
+    global username, ID
+
     client.publish("test/app", "Please Enter User Information")
 
 def sql_face_data_collection(client):
@@ -311,6 +313,8 @@ def on_connect(client, userdata, flags, rc):
     client.publish("test/app", "MQTT CONNECTION ESTABLISHED")
 
 def on_message(client, userdata, msg):
+    global username, ID
+
     print(msg.topic + " " + str(msg.payload))
     # Perform desired action based on the received message
     topic = msg.topic
