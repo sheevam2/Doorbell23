@@ -9,6 +9,7 @@ import pickle
 import threading
 import concurrent.futures
 import json
+import base64
 
 kit = ServoKit(channels=16)
 kit.servo[8].angle = 0
@@ -233,9 +234,21 @@ def sql_face_recognizer(client):
     start_time = time()
     elapsed_time = 0
     timeout = 15
+
     while (elapsed_time < timeout):
         ret, image = capture.read()
         image = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE) #Vertical camera flip
+
+        # Convert the frame to base64 encoding to publish as a string payload
+        _, buffer = cv2.imencode('.jpg', image)
+        frame_base64 = base64.b64encode(buffer)
+
+        # Publish the fsrame as an MQTT message
+        client.publish("test/video", payload=frame_base64, qos=0)
+
+        # You can add a small delay to control the frame rate (optional)
+        sleep(0.1)
+
         gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) #grayscale
         faces_detected = face_cascade.detectMultiScale(gray_img, 1.2, 5, minSize = (int(min_w),int(min_h)))
 
@@ -265,6 +278,7 @@ def sql_face_recognizer(client):
         elapsed_time = time() - start_time
 
     print("Exiting Program")
+    client.publish("test/app", "Facial Recognition is finished!")
     
     #client.loop_stop()
     cursor.close()
@@ -315,6 +329,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("test/servo")
     client.subscribe("test/app")
     client.subscribe("test/popup")
+    client.subscribe("test/video")
     client.publish("test/app", "MQTT CONNECTION ESTABLISHED")
 
 def on_message(client, userdata, msg):

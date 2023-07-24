@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Button, TouchableOpacity, ScrollView, Modal, TextInput} from 'react-native';
+import { StyleSheet, Text, View, Button, TouchableOpacity, ScrollView, Modal, TextInput, Image} from 'react-native';
 import React, { useState, useEffect, useRef } from 'react'; // Import useState and useEffect from 'react'
 //import { MqttClient, MqttConnectionState } from 'sp-react-native-mqtt';
 //import Mqtt from 'react_native_mqtt';
@@ -77,6 +77,10 @@ const [inputNumber, setInputNumber] = useState('');
 const [isModalVisible, setModalVisible] = useState(false);
 const [messages, setMessages] = useState([]);
 
+const [videoFrame, setVideoFrame] = useState(null);
+const [isVideoModalVisible, setVideoModalVisible] = useState(false);
+
+
 
 client.on('connected', () => {
   console.log('PART 2');
@@ -99,14 +103,21 @@ useEffect(() => {
       });
       client.subscribe("test/app")
       client.subscribe("test/popup")
+      client.subscribe("test/video")
 
       client.on('messageReceived', (message) => {
         const topic = message.destinationName; // Get the topic of the received message
+        if (topic === "test/video") {
+          handleVideoFrame(message)
+        }
         if (topic === 'test/app') {
           console.log('Message:', message.payloadString);
           setMessages((prevMessages) => [message.payloadString, ...prevMessages]);
           if (message.payloadString == "Please Enter User Information") {
             toggleModal()
+          }
+          if (message.payloadString == "Facial Recognition is finished!") {
+            setVideoModalVisible(false)
           }
         }
       });
@@ -237,6 +248,7 @@ const FR_button = () => {
   client.send(message);
   const message1 = 'Facial Recognition Button Pressed!';
   setMessages((prevMessages) => [ message1, ...prevMessages]);
+  setVideoModalVisible(true);
 };
 
 const newface_button = () => {
@@ -278,6 +290,10 @@ const handleSubmit = () => {
   // Optional: Update your messages state with a confirmation message
   const confirmationMessage = `Username: ${username}, ID: ${inputNumber} submitted`;
   setMessages((prevMessages) => [confirmationMessage, ...prevMessages]);
+};
+
+const handleVideoFrame = (message) => {
+  setVideoFrame(message.payloadString);
 };
 
 /*const handleNumberSubmit = () => {
@@ -340,6 +356,12 @@ const handleSubmit = () => {
         </View>
       </Modal>
 
+      <Modal visible={isVideoModalVisible} animationType="slide">
+        <View style={styles.videoModalContainer}>
+          {/* Display the received video frame as an Image */}
+          {videoFrame && <Image source={{ uri: `data:image/jpeg;base64,${videoFrame}` }} style={styles.videoFrame} />}
+        </View>
+      </Modal>
 
       </View>
       <StatusBar style="auto" />
@@ -471,6 +493,15 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderRadius: 8,
   },
-  
+  videoModalContainer: {
+    flex: 1,
+    backgroundColor: 'black',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  videoFrame: {
+    width: 320,
+    height: 240,
+  }, 
   
 });
