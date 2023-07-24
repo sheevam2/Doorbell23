@@ -230,7 +230,7 @@ def sql_face_recognizer(client):
             return row[0]
         return "Unknown"
     
-    start_time = time.time()
+    start_time = time()
     elapsed_time = 0
     timeout = 15
     while (elapsed_time < timeout):
@@ -262,7 +262,7 @@ def sql_face_recognizer(client):
         if a == 27: #Press escape to quit
             break
         
-        elapsed_time = time.time() - start_time
+        elapsed_time = time() - start_time
 
     print("Exiting Program")
     
