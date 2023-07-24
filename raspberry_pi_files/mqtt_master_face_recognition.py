@@ -347,14 +347,14 @@ def connect_mqtt(num):
     # Start the MQTT client's network loop
     #client.loop_start()
 
-    angle = kit.servo[0].angle
+    angle = kit.servo[8].angle
     #print("HI")
     if angle == 0:
         client.publish("test/status", "Unlocked")
-        #print("Unlocked")
+        print("Unlocked")
     elif angle == 180:
         client.publish("test/status", "Locked")
-        #print("Locked")
+        print("Locked")
 
     if (num == 1):
         sql_face_trainer(client)
