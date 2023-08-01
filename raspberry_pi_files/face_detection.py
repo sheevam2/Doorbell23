@@ -4,13 +4,13 @@ import cv2
 face_cascade = cv2.CascadeClassifier("haarcascade_frontalface_default1.xml")
     
 capture = cv2.VideoCapture(0)
-capture.set(3, 640) #width
-capture.set(4, 480) #height
+capture.set(3, 640) 
+capture.set(4, 480) 
 
 while True:
     ret, image = capture.read()
-    image = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE) #Vertical camera flip
-    gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) #grayscale
+    image = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE) 
+    gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) 
 
     faces_detected = face_cascade.detectMultiScale(gray_img, 1.2, 5, minSize = (20,20))
 
@@ -21,7 +21,7 @@ while True:
 
     cv2.imshow('video', image)
     a = cv2.waitKey(30) & 0xff
-    if a == 27: #Press escape to quit
+    if a == 27: 
         break
 
 capture.release()

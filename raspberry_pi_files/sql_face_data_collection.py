@@ -3,8 +3,8 @@ import sqlite3
 import pickle
 
 capture = cv2.VideoCapture(0)
-capture.set(3, 640) #width
-capture.set(4, 480) #height
+capture.set(3, 640)
+capture.set(4, 480) 
 
 face_cascade = cv2.CascadeClassifier("haarcascade_frontalface_default1.xml")
 
@@ -13,13 +13,8 @@ face_cascade = cv2.CascadeClassifier("haarcascade_frontalface_default1.xml")
 def changeDB(ID,Name,Photos):
     conn = sqlite3.connect("FaceBase.db")
     cursor = conn.execute("SELECT * FROM people WHERE PersonID = ?", (ID,))
-	#cursor.execute(cmd)
         
     isRecordExist = cursor.fetchone()
-    #isRecordExist=0
-    #for row in cursor:
-        #isRecordExist=1
-
 
     try:
         if(isRecordExist is not None):
@@ -28,8 +23,7 @@ def changeDB(ID,Name,Photos):
         else:
             cmd="INSERT INTO people(PersonID, Name, Photos) VALUES(?, ?, ?)"	 
             conn.execute(cmd, (ID, str(Name), Photos))
-
-        #conn.execute(cmd)  
+ 
         conn.commit()
         print("UPDATED SUCCESFULLY")
     except:
@@ -49,19 +43,18 @@ photos_list = []
 count = 0
 while(True):
     ret, image = capture.read()
-    image = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE) #Vertical camera flip
-    gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) #grayscale
+    image = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE)
+    gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) 
     faces_detected = face_cascade.detectMultiScale(gray_img, 1.2, 5, minSize = (20,20))
 
     for (x,y,w,h) in faces_detected:
         cv2.rectangle(image,(x,y),(x+w, y+h),(255,0,0),2)
         count += 1
         photos_list.append(gray_img[y:y+h,x:x+w])
-        #cv2.imwrite("dataset/User." + str(id) + '.' + str(count) + ".jpg", gray_img[y:y+h,x:x+w])
         cv2.imshow('image', image)
     
     a = cv2.waitKey(100) & 0xff
-    if a == 27: #Press escape to quit
+    if a == 27:
         break
     elif count >= 30:
         break
